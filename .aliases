@@ -1,0 +1,44 @@
+# >>> general >>>
+alias l='ls'
+alias ll='ls -la'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias :q='exit 0'
+alias count='ls -1A | wc -l'
+alias src='source ~/.bashrc'
+alias watch='watch -x bash -ic'
+# <<< general <<<
+ 
+# >>> git >>>
+alias gs='git status'
+alias gd='git diff'
+alias gds='git diff --staged'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gpl='git pull'
+alias gr='git restore'
+alias gb='git branch -va'
+alias gch='git checkout'
+alias gl='git log --oneline --graph --all'
+alias gpsu='git push --set-upstream origin "$(git symbolic-ref --short HEAD)"'
+alias gru='git remote update origin --prune'
+alias gpr="git fetch --prune && git branch -vv | grep 'gone]' | awk '{print \$1}' | xargs git branch -D"
+# <<< git <<<
+
+# >>> nvidia-smi >>>
+alias nv='nvidia-smi'
+alias wnv='watch -n 1 nvidia-smi'
+alias nvwho='nvidia-smi --query-compute-apps=pid --format=csv,noheader | xargs -r ps -up'
+# <<< nvidia-smi <<<
+
+# >>> conda >>>
+alias cda='conda activate'
+alias cdd='conda deactivate'
+alias cdl='conda list'
+alias cdel='conda env list'
+# <<< conda <<<
+
+# >>> slurm >>>
+alias sq='squeue'
+# <<< slurm <<<
