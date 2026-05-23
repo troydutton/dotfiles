@@ -25,3 +25,14 @@ function! ToggleComment() range
   endif
 endfunction
 " <<< Comment/Uncomment (Ctrl+/) <<<
+
+" >>> Syntax Highlighting >>>
+syntax on
+filetype plugin indent on
+" <<< Syntax Highlighting <<<
+
+" >>> Theme >>>
+set termguicolors
+set background=dark
+colorscheme slate
+" <<< Theme <<<
