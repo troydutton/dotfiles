@@ -16,7 +16,7 @@ git clone --bare https://github.com/troydutton/dotfiles.git $HOME/.dotfiles
 
 3. Hide untracked files.
 ```bash
-dot --local status.showUntrackedFiles no
+dot config --local status.showUntrackedFiles no
 ```
 
 4. Checkout the files.
