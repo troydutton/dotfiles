@@ -24,7 +24,7 @@ alias gl='git log --oneline --graph --all'
 alias gpsu='git push --set-upstream origin "$(git symbolic-ref --short HEAD)"'
 alias gru='git remote update origin --prune'
 alias gpr="git fetch --prune && git branch -vv | grep 'gone]' | awk '{print \$1}' | xargs git branch -D"
-alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias dot='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 # <<< git <<<
 
 # >>> nvidia-smi >>>
