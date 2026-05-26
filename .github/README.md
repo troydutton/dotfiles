@@ -21,5 +21,20 @@ dot config --local status.showUntrackedFiles no
 
 4. Checkout the files.
 ```bash
-git checkout
+dot checkout
+```
+
+5. Add the following lines to `.bashrc`.
+```bash
+# >>> Prompt >>>
+if [ -f ~/.prompt ]; then
+    . ~/.prompt
+fi
+# <<< Prompt <<<
+
+# >>> Aliases >>>
+if [ -f ~/.aliases ]; then
+    . ~/.aliases
+fi
+# <<< Aliases <<<
 ```
