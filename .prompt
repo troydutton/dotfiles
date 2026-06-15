@@ -6,7 +6,7 @@ fi
 # Get the active conda environment
 conda_env() {
     if [ -n "$CONDA_DEFAULT_ENV" ]; then
-        printf "($CONDA_DEFAULT_ENV) "
+        printf "(%s) " "$CONDA_DEFAULT_ENV"
     fi
 }
 
@@ -14,15 +14,19 @@ conda_env() {
 parse_git_branch() {
     local branch=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
     if [ -n "$branch" ]; then
-        if [ "$1" == "color" ]; then
-            printf " on \033[01;36m%s" "$branch"
+        if [ -n "$ZSH_VERSION" ]; then
+            printf " on %%{\033[01;36m%%}%s%%{\033[00m%%}" "$branch"
         else
-            printf " on %s" "$branch"
+            printf " on \033[01;36m%s\033[00m" "$branch"
         fi
     fi
 }
 
-# Create prompt, e.g.
-# ┌ (detr) troy@blade1:~/programs/detr on main
-# └ $
-PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]┌ $(conda_env)\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(parse_git_branch color)\[\033[00m\]\n\[\033[01;32m\]└ \$\[\033[00m\] '
+# Detect active shell and create prompt
+if [ -n "$ZSH_VERSION" ]; then
+    setopt PROMPT_SUBST
+    PS1='${debian_chroot:+($debian_chroot)}%B%F{green}┌ $(conda_env)%n@%m%f%b:%B%F{blue}%~%f%b$(parse_git_branch)
+%B%F{green}└ %#%f%b '
+elif [ -n "$BASH_VERSION" ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]┌ $(conda_env)\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(parse_git_branch)\n\[\033[01;32m\]└ \$\[\033[00m\] '
+fi

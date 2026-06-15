@@ -5,7 +5,7 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias :q='exit 0'
 alias count='ls -1A | wc -l'
-alias src='source ~/.bashrc'
+alias src='source ${ZSH_VERSION:+~/.zshrc}${BASH_VERSION:+~/.bashrc}'
 alias watch='watch -x bash -ic'
 # <<< general <<<
  
