@@ -3,10 +3,15 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-# Get the active conda environment
-conda_env() {
+# Prevent venv's activate script from prepending "(.venv) "
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+# Get the active python environment
+python_env() {
     if [ -n "$CONDA_DEFAULT_ENV" ]; then
         printf "(%s) " "$CONDA_DEFAULT_ENV"
+    elif [ -n "$VIRTUAL_ENV" ]; then
+        printf "(%s) " "$(basename "$VIRTUAL_ENV")"
     fi
 }
 
@@ -25,8 +30,8 @@ parse_git_branch() {
 # Detect active shell and create prompt
 if [ -n "$ZSH_VERSION" ]; then
     setopt PROMPT_SUBST
-    PS1='${debian_chroot:+($debian_chroot)}%B%F{green}┌ $(conda_env)%n@%m%f%b:%B%F{blue}%~%f%b$(parse_git_branch)
+    PS1='${debian_chroot:+($debian_chroot)}%B%F{green}┌ $(python_env)%n@%m%f%b:%B%F{blue}%~%f%b$(parse_git_branch)
 %B%F{green}└ %#%f%b '
 elif [ -n "$BASH_VERSION" ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]┌ $(conda_env)\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(parse_git_branch)\n\[\033[01;32m\]└ \$\[\033[00m\] '
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]┌ $(python_env)\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(parse_git_branch)\n\[\033[01;32m\]└ \$\[\033[00m\] '
 fi
