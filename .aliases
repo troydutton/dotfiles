@@ -16,6 +16,7 @@ alias gds='git diff --staged'
 alias ga='git add'
 alias gc='git commit'
 alias gp='git push'
+alias gpf='git push --force-with-lease'
 alias gpl='git pull'
 alias gr='git restore'
 alias gb='git branch -va'
@@ -24,6 +25,9 @@ alias gl='git log --oneline --graph --all'
 alias gpsu='git push --set-upstream origin "$(git symbolic-ref --short HEAD)"'
 alias gru='git remote update origin --prune'
 alias gpr="git fetch --prune && git branch -vv | grep 'gone]' | awk '{print \$1}' | xargs git branch -D"
+alias gw="git worktree"
+alias gwl="git worktree list"
+alias gwa="git worktree add"
 alias dot='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 # <<< git <<<
 
