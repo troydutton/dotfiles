@@ -36,3 +36,16 @@ set termguicolors
 set background=dark
 colorscheme slate
 " <<< Theme <<<
+
+" >>> Search >>>
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+set shortmess-=S
+" <<< Search <<<
+
+" >>> Status Line >>>
+set laststatus=2
+set statusline=%f\ %m%r%=%y\ line\ %l/%L\ col\ %c\ (%p%%)
+" <<< Status Line <<<
