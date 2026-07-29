@@ -10,25 +10,36 @@ alias watch='watch -x bash -ic'
 # <<< general <<<
  
 # >>> git >>>
-alias gs='git status'
-alias gd='git diff'
-alias gds='git diff --staged'
-alias ga='git add'
-alias gc='git commit'
-alias gp='git push'
-alias gpf='git push --force-with-lease'
-alias gpl='git pull'
-alias gr='git restore'
-alias gb='git branch -va'
-alias gch='git checkout'
-alias gl='git log --oneline --graph --all'
-alias gpsu='git push --set-upstream origin "$(git symbolic-ref --short HEAD)"'
-alias gru='git remote update origin --prune'
+if [ -n "$ZSH_VERSION" ]; then
+    (( $+functions[compdef] )) || { autoload -Uz compinit && compinit -u; }
+    gitcomp() { if [ -n "$2" ]; then compdef _git "$1=git-$2"; else compdef _git "$1=git"; fi; }
+elif [ -n "$BASH_VERSION" ] && declare -F __git_complete >/dev/null 2>&1; then
+    gitcomp() { if [ -n "$2" ]; then __git_complete "$1" "_git_${2//-/_}"; else __git_complete "$1" __git_main; fi; }
+else
+    gitcomp() { :; }
+fi
+
+alias gs='git status'; gitcomp gs status
+alias gd='git diff'; gitcomp gd diff
+alias gds='git diff --staged'; gitcomp gds diff
+alias ga='git add'; gitcomp ga add
+alias gc='git commit'; gitcomp gc commit
+alias gp='git push'; gitcomp gp push
+alias gf='git fetch'; gitcomp gf fetch
+alias gpf='git push --force-with-lease'; gitcomp gpf push
+alias gpl='git pull'; gitcomp gpl pull
+alias gr='git restore'; gitcomp gr restore
+alias gb='git branch -va'; gitcomp gb branch
+alias gch='git checkout'; gitcomp gch checkout
+alias gl='git log --oneline --graph main..'; gitcomp gl log
+alias gpsu='git push --set-upstream origin "$(git symbolic-ref --short HEAD)"'; gitcomp gpsu push
+alias gru='git remote update origin --prune'; gitcomp gru remote
 alias gpr="git fetch --prune && git branch -vv | grep 'gone]' | awk '{print \$1}' | xargs git branch -D"
-alias gw="git worktree"
-alias gwl="git worktree list"
-alias gwa="git worktree add"
-alias dot='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias gw="git worktree"; gitcomp gw worktree
+alias gwl="git worktree list"; gitcomp gwl worktree
+alias gwa="git worktree add"; gitcomp gwa worktree
+alias gwpr="git worktree prune"; gitcomp gwpr worktree
+alias dot='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'; gitcomp dot
 # <<< git <<<
 
 # >>> nvidia-smi >>>
