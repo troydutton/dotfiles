@@ -7,6 +7,7 @@ alias :q='exit 0'
 alias count='ls -1A | wc -l'
 alias src='source ${ZSH_VERSION:+~/.zshrc}${BASH_VERSION:+~/.bashrc}'
 alias watch='watch -x bash -ic'
+alias sync-agent-ui='~/.agents/sync-agent-ui'
 # <<< general <<<
  
 # >>> git >>>
@@ -29,7 +30,7 @@ alias gf='git fetch'; gitcomp gf fetch
 alias gpf='git push --force-with-lease'; gitcomp gpf push
 alias gpl='git pull'; gitcomp gpl pull
 alias gr='git restore'; gitcomp gr restore
-alias gb='git branch -va'; gitcomp gb branch
+alias gb='git branch -v'; gitcomp gb branch
 alias gch='git checkout'; gitcomp gch checkout
 alias gl='git log --oneline --graph main..'; gitcomp gl log
 alias gpsu='git push --set-upstream origin "$(git symbolic-ref --short HEAD)"'; gitcomp gpsu push
@@ -38,6 +39,7 @@ alias gpr="git fetch --prune && git branch -vv | grep 'gone]' | awk '{print \$1}
 alias gw="git worktree"; gitcomp gw worktree
 alias gwl="git worktree list"; gitcomp gwl worktree
 alias gwa="git worktree add"; gitcomp gwa worktree
+alias gwr="git worktree remove --force"; gitcomp gwr worktree
 alias gwpr="git worktree prune"; gitcomp gwpr worktree
 alias dot='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'; gitcomp dot
 # <<< git <<<
