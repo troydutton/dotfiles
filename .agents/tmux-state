@@ -1,0 +1,32 @@
+#!/bin/sh
+# Render a shared Claude/Codex lifecycle state in the current tmux window.
+set -eu
+
+[ -n "${TMUX:-}" ] && [ -n "${TMUX_PANE:-}" ] || exit 0
+
+AGENT_UI_SPEC_PATH="${AGENT_UI_SPEC_PATH:-$HOME/.agents/statusline.json}"
+state="${1:-clear}"
+
+if [ "$state" = clear ]; then
+    owner=$(tmux show-options -wqv -t "$TMUX_PANE" @agent_state_owner 2>/dev/null || true)
+    if [ -z "$owner" ] || [ "$owner" = "$TMUX_PANE" ]; then
+        tmux set-option -w -t "$TMUX_PANE" -u @agent_state 2>/dev/null || true
+        tmux set-option -w -t "$TMUX_PANE" -u @agent_state_owner 2>/dev/null || true
+    fi
+    exit 0
+fi
+
+case "$state" in
+    run|ask|ok) ;;
+    *)
+        printf 'unknown agent tmux state: %s\n' "$state" >&2
+        exit 2
+        ;;
+esac
+
+glyph=$(jq -er --arg state "$state" '.tmux.states[$state] // empty' \
+    "$AGENT_UI_SPEC_PATH" 2>/dev/null) || exit 0
+
+tmux set-option -w -t "$TMUX_PANE" @agent_state "$glyph" 2>/dev/null || true
+tmux set-option -w -t "$TMUX_PANE" @agent_state_owner "$TMUX_PANE" 2>/dev/null || true
+exit 0

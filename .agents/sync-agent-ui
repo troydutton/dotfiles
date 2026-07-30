@@ -1,0 +1,114 @@
+#!/bin/sh
+# Compile the shared agent UI specification into Codex's native status line.
+set -eu
+
+AGENT_UI_SPEC_PATH="${AGENT_UI_SPEC_PATH:-$HOME/.agents/statusline.json}"
+CODEX_CONFIG_PATH="${CODEX_CONFIG_PATH:-$HOME/.codex/config.toml}"
+MODE="${1:-apply}"
+
+case "$MODE" in
+    apply|--check) ;;
+    *)
+        printf 'usage: sync-agent-ui [--check]\n' >&2
+        exit 2
+        ;;
+esac
+
+if [ ! -f "$AGENT_UI_SPEC_PATH" ]; then
+    printf 'shared agent UI specification not found: %s\n' "$AGENT_UI_SPEC_PATH" >&2
+    exit 1
+fi
+if [ ! -f "$CODEX_CONFIG_PATH" ]; then
+    printf 'Codex configuration not found: %s\n' "$CODEX_CONFIG_PATH" >&2
+    exit 1
+fi
+
+status_fields=$(jq -cer '
+  . as $root
+  | reduce (
+      $root.status_line.segments[] as $segment
+      | ($root.codex.fields[$segment] // [])[]
+    ) as $field (
+      [];
+      if index($field) then . else . + [$field] end
+    )
+' "$AGENT_UI_SPEC_PATH") || {
+    printf 'invalid shared agent UI specification: %s\n' "$AGENT_UI_SPEC_PATH" >&2
+    exit 1
+}
+
+status_line="status_line = $status_fields"
+tmp_path=$(mktemp "${TMPDIR:-/tmp}/sync-agent-ui.XXXXXX")
+trap 'rm -f "$tmp_path"' EXIT HUP INT TERM
+chmod 600 "$tmp_path"
+
+has_tui=$(awk '
+  /^\[tui\][[:space:]]*$/ { found = 1 }
+  END { print found ? "yes" : "no" }
+' "$CODEX_CONFIG_PATH")
+
+if [ "$has_tui" = yes ]; then
+    awk -v status_line="$status_line" '
+      BEGIN {
+        in_tui = 0
+        wrote_status = 0
+      }
+      /^\[tui\][[:space:]]*$/ {
+        in_tui = 1
+        print
+        next
+      }
+      /^\[/ {
+        if (in_tui && !wrote_status) {
+          print status_line
+          wrote_status = 1
+        }
+        in_tui = 0
+      }
+      in_tui && /^[[:space:]]*status_line[[:space:]]*=/ {
+        if (!wrote_status) {
+          print status_line
+          wrote_status = 1
+        }
+        next
+      }
+      { print }
+      END {
+        if (in_tui && !wrote_status) {
+          print status_line
+        }
+      }
+    ' "$CODEX_CONFIG_PATH" > "$tmp_path"
+else
+    awk -v status_line="$status_line" '
+      BEGIN { wrote_tui = 0 }
+      !wrote_tui && /^\[tui\./ {
+        print "[tui]"
+        print status_line
+        print ""
+        wrote_tui = 1
+      }
+      { print }
+      END {
+        if (!wrote_tui) {
+          print ""
+          print "[tui]"
+          print status_line
+        }
+      }
+    ' "$CODEX_CONFIG_PATH" > "$tmp_path"
+fi
+
+if cmp -s "$CODEX_CONFIG_PATH" "$tmp_path"; then
+    printf 'Codex status line is already in sync.\n'
+    exit 0
+fi
+
+if [ "$MODE" = --check ]; then
+    printf 'Codex status line is out of sync; run sync-agent-ui.\n' >&2
+    exit 1
+fi
+
+mv "$tmp_path" "$CODEX_CONFIG_PATH"
+trap - EXIT HUP INT TERM
+printf 'Updated %s from %s.\n' "$CODEX_CONFIG_PATH" "$AGENT_UI_SPEC_PATH"

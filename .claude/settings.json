@@ -2,18 +2,14 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "model": "Opus",
-  "statusLine": {
-    "type": "command",
-    "command": "sh ~/.claude/statusline-command.sh"
-  },
+  "model": "Fable",
   "hooks": {
     "SessionStart": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "sh ~/.claude/tmux-window-flag.sh ok",
+            "command": "sh ~/.agents/tmux-state ok",
             "async": true
           }
         ]
@@ -24,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh ~/.claude/tmux-window-flag.sh run",
+            "command": "sh ~/.agents/tmux-state run",
             "async": true
           }
         ]
@@ -35,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh ~/.claude/tmux-window-flag.sh run",
+            "command": "sh ~/.agents/tmux-state run",
             "async": true
           }
         ]
@@ -46,7 +42,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh ~/.claude/tmux-window-flag.sh ask",
+            "command": "sh ~/.agents/tmux-state ask",
             "async": true
           }
         ]
@@ -57,7 +53,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh ~/.claude/tmux-window-flag.sh ask",
+            "command": "sh ~/.agents/tmux-state ask",
             "async": true
           }
         ]
@@ -68,7 +64,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh ~/.claude/tmux-window-flag.sh ok",
+            "command": "sh ~/.agents/tmux-state ok",
             "async": true
           }
         ]
@@ -79,12 +75,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh ~/.claude/tmux-window-flag.sh clear",
+            "command": "sh ~/.agents/tmux-state clear",
             "async": true
           }
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "sh ~/.claude/statusline-command.sh"
   },
   "effortLevel": "high",
   "skipWorkflowUsageWarning": true,

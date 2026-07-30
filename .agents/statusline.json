@@ -1,0 +1,54 @@
+{
+  "status_line": {
+    "segments": [
+      "workspace",
+      "branch",
+      "model_reasoning",
+      "context",
+      "five_hour_limit",
+      "weekly_limit"
+    ],
+    "separator": " | ",
+    "max_name_length": 16,
+    "bar_width": 10,
+    "icons": {
+      "workspace": "📂",
+      "branch": "🌿",
+      "model": "🤖",
+      "reasoning": "⚡",
+      "context": "🔋",
+      "five_hour_limit": "⏳",
+      "weekly_limit": "📅"
+    }
+  },
+  "codex": {
+    "fields": {
+      "workspace": [
+        "project-root"
+      ],
+      "branch": [
+        "git-branch"
+      ],
+      "model_reasoning": [
+        "model-with-reasoning"
+      ],
+      "context": [
+        "context-used",
+        "context-window-size"
+      ],
+      "five_hour_limit": [
+        "five-hour-limit"
+      ],
+      "weekly_limit": [
+        "weekly-limit"
+      ]
+    }
+  },
+  "tmux": {
+    "states": {
+      "run": "◐",
+      "ask": "▲",
+      "ok": "◌"
+    }
+  }
+}
