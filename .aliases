@@ -30,7 +30,9 @@ alias gf='git fetch'; gitcomp gf fetch
 alias gpf='git push --force-with-lease'; gitcomp gpf push
 alias gpl='git pull'; gitcomp gpl pull
 alias gr='git restore'; gitcomp gr restore
-alias gb='git branch -v'; gitcomp gb branch
+alias gb='git branch --list --format="%(if:equals=*)%(HEAD)%(then)%(color:green)* %(else)%(if)%(worktreepath)%(then)%(color:cyan)+ %(else)  %(end)%(end)%(refname:short)%(color:reset)%(if)%(upstream)%(then) %(color:blue)[%(upstream:short)]%(color:reset)%(end)"'; gitcomp gb branch
+alias gbd='git branch -d'; gitcomp gbd branch
+alias gbdu='git push origin --delete'; gitcomp gbdu push
 alias gch='git checkout'; gitcomp gch checkout
 alias gl='git log --oneline --graph main..'; gitcomp gl log
 alias gpsu='git push --set-upstream origin "$(git symbolic-ref --short HEAD)"'; gitcomp gpsu push
