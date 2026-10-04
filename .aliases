@@ -11,39 +11,76 @@ alias sync-agent-ui='~/.agents/sync-agent-ui'
 # <<< general <<<
  
 # >>> git >>>
+# Load git's bash completion up front. bash-completion lazy-loads per-command
+# files, so __git_complete does not exist until git's own script is sourced --
+# and this file may be sourced before bash-completion is even loaded.
+if [ -n "$BASH_VERSION" ] && ! declare -F __git_complete >/dev/null 2>&1; then
+    for _gc in \
+        /usr/share/bash-completion/completions/git \
+        /opt/homebrew/etc/bash_completion.d/git \
+        /usr/local/etc/bash_completion.d/git \
+        /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash
+    do
+        [ -r "$_gc" ] && { . "$_gc"; break; }
+    done
+    unset _gc
+fi
+
 if [ -n "$ZSH_VERSION" ]; then
     (( $+functions[compdef] )) || { autoload -Uz compinit && compinit -u; }
     gitcomp() { if [ -n "$2" ]; then compdef _git "$1=git-$2"; else compdef _git "$1=git"; fi; }
 elif [ -n "$BASH_VERSION" ] && declare -F __git_complete >/dev/null 2>&1; then
-    gitcomp() { if [ -n "$2" ]; then __git_complete "$1" "_git_${2//-/_}"; else __git_complete "$1" __git_main; fi; }
+    # gitcomp <alias> [the git words the alias already supplies...]
+    # Complete as if the full command had been typed, so an alias that bakes in
+    # a subcommand (gwr -> git worktree remove) completes that subcommand's
+    # arguments instead of re-offering the subcommand list. COMP_LINE/COMP_POINT
+    # are rewritten alongside COMP_WORDS because bash-completion derives the
+    # current word from the line, not from the word array.
+    gitcomp() {
+        local a=$1; shift
+        local fn="__gitcomp_wrap_${a//[^A-Za-z0-9_]/_}"
+        local n=$# pre="git" q="" w
+        for w in "$@"; do pre="$pre $w"; q="$q $(printf '%q' "$w")"; done
+        eval "$fn() {
+            local __a=\${COMP_WORDS[0]}
+            COMP_WORDS=(git$q \"\${COMP_WORDS[@]:1}\")
+            COMP_CWORD=\$(( COMP_CWORD + $n ))
+            COMP_POINT=\$(( COMP_POINT - \${#__a} + ${#pre} ))
+            COMP_LINE=\"$pre\${COMP_LINE:\${#__a}}\"
+            __git_func_wrap __git_main
+        }"
+        complete -o bashdefault -o default -o nospace -F "$fn" "$a"
+    }
 else
     gitcomp() { :; }
 fi
 
 alias gs='git status'; gitcomp gs status
 alias gd='git diff'; gitcomp gd diff
-alias gds='git diff --staged'; gitcomp gds diff
+alias gds='git diff --staged'; gitcomp gds diff --staged
 alias ga='git add'; gitcomp ga add
 alias gc='git commit'; gitcomp gc commit
 alias gp='git push'; gitcomp gp push
 alias gf='git fetch'; gitcomp gf fetch
-alias gpf='git push --force-with-lease'; gitcomp gpf push
+alias gpf='git push --force-with-lease'; gitcomp gpf push --force-with-lease
 alias gpl='git pull'; gitcomp gpl pull
 alias gr='git restore'; gitcomp gr restore
-alias gb='git branch --list --format="%(if:equals=*)%(HEAD)%(then)%(color:green)* %(else)%(if)%(worktreepath)%(then)%(color:cyan)+ %(else)  %(end)%(end)%(refname:short)%(color:reset)%(if)%(upstream)%(then) %(color:blue)[%(upstream:short)]%(color:reset)%(end)"'; gitcomp gb branch
-alias gbd='git branch -d'; gitcomp gbd branch
-alias gbD='git branch -D'; gitcomp gbD branch
-alias gbdu='git push origin --delete'; gitcomp gbdu push
+alias gb='git branch --list --format="%(if:equals=*)%(HEAD)%(then)%(color:green)* %(else)%(if)%(worktreepath)%(then)%(color:cyan)+ %(else)  %(end)%(end)%(refname:short)%(color:reset)%(if)%(upstream)%(then) %(color:blue)[%(upstream:short)]%(color:reset)%(end)"'; gitcomp gb branch --list
+alias gbd='git branch -d'; gitcomp gbd branch -d
+alias gbD='git branch -D'; gitcomp gbD branch -D
+# Accept either the branch name or the remote-tracking name that `gb -a` prints,
+# so refs pasted straight out of that listing don't become refs/heads/origin/...
+gbdu() { git push origin --delete "${@#origin/}"; }; gitcomp gbdu push origin --delete
 alias gch='git checkout'; gitcomp gch checkout
-alias gl='git log --oneline --graph main..'; gitcomp gl log
-alias gpsu='git push --set-upstream origin "$(git symbolic-ref --short HEAD)"'; gitcomp gpsu push
-alias gru='git remote update origin --prune'; gitcomp gru remote
+alias gl='git log --oneline --graph main..'; gitcomp gl log --oneline --graph
+alias gpsu='git push --set-upstream origin "$(git symbolic-ref --short HEAD)"'; gitcomp gpsu push --set-upstream origin
+alias gru='git remote update origin --prune'; gitcomp gru remote update
 alias gpr="git fetch --prune && git branch -vv | grep 'gone]' | awk '{print \$1}' | xargs git branch -D"
 alias gw="git worktree"; gitcomp gw worktree
-alias gwl="git worktree list"; gitcomp gwl worktree
-alias gwa="git worktree add"; gitcomp gwa worktree
-alias gwr="git worktree remove --force"; gitcomp gwr worktree
-alias gwpr="git worktree prune"; gitcomp gwpr worktree
+alias gwl="git worktree list"; gitcomp gwl worktree list
+alias gwa="git worktree add"; gitcomp gwa worktree add
+alias gwr="git worktree remove --force"; gitcomp gwr worktree remove --force
+alias gwpr="git worktree prune"; gitcomp gwpr worktree prune
 alias dot='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'; gitcomp dot
 # <<< git <<<
 
