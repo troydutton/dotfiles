@@ -245,6 +245,7 @@ for segment_name in $segment_order; do
     esac
 done
 
+
 # If the full line would overflow the terminal, compress the statusline
 case "$COLUMNS" in
     ''|*[!0-9]*) ;;

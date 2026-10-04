@@ -1,8 +1,12 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "defaultMode": "auto"
   },
-  "model": "Fable",
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -87,7 +91,50 @@
     "command": "sh ~/.claude/statusline-command.sh"
   },
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  },
+  "tui": "fullscreen",
   "skipWorkflowUsageWarning": true,
   "theme": "dark",
-  "editorMode": "vim"
+  "editorMode": "vim",
+  "autoCompactEnabled": true,
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true,
+  "autoMode": {
+    "soft_deny": [
+      "$defaults",
+      "Bash(aws s3 rm:*) — scoped to datology-assets-prod / prod-datology-assets / mock-assets-production buckets",
+      "Bash(git push --force:*) on protected branches (main, release/*) in datologyai/universe"
+    ],
+    "environment": [
+      "### Org-wide",
+      "**Organization**: Datologyai (GitHub org 'datologyai'; repo datologyai/universe)",
+      "**Cloud provider(s)**: AWS (ECR registry 764487710063.dkr.ecr.us-east-1.amazonaws.com; S3 buckets referenced throughout repo)",
+      "**Repository visibility**: private (datologyai/universe, confirmed via gh)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: AWS Secrets Manager (`aws secretsmanager`), 1Password CLI (`op read`); CI secrets referenced by name only (e.g. ANTHROPIC_API_KEY, GITHUB_TOKEN, TAILSCALE_AUTH_KEY, SLACK_BOT_TOKEN, DEVX_AGENT_PRIVATE_KEY, etc.) — values never accessible, names only",
+      "**Default / protected branches**: `main` (default), plus protected: `release/0.1`, `release/0.2-backport-fixes`, `release/0.2`, `release/0.3`, `release/0.4`, `release/0.5`, `release/1.0`, `release/1.1` (via gh; no rulesets listed but protection is explicit here)",
+      "**CI/CD deploy targets**: GitHub Actions workflows referencing production deploys (e.g. `.github/workflows/deploy_scheduler_service_prod.yml`, `check_prod_publish_blocking_workflows.sh`); AWS via CloudFormation/EKS",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine or CI runner with open internet",
+      "**Source control**: The trusted repo (datologyai/universe) and its remote(s) only (no additional orgs configured)",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: datology-assets-dev, datology-assets-staging, datology-assets-prod, datology-job-assets, datology-research, datology-external-artifacts, datology-output-datasets, datology-code-artifacts, datology-datasets (config-derived — not a confirmed upload destination; uploads of local data still require confirmation)",
+      "**Key internal services**: None configured",
+      "**Internal package registry**: 764487710063.dkr.ecr.us-east-1.amazonaws.com (ECR container registry)",
+      "**Sensitive data locations & audiences**: CI secret names in `.github/workflows/*` and infra scripts (`infra/scripts/asset_tracker_access/*`, `infra/scripts/set_eks_secret.sh`); customer/HRT IAM policy templates under `cloudformation/customer/`, `cloudformation/internal/*_deployer_iam_policy.json`; `docs/read_only_asset_tracker/user_secrets.md`; `src/web/curation-studio/.env.example`; share only with Datologyai engineering audiences cleared for infra/production credentials",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: prod-datology-assets, mock-assets-production, `deploy_scheduler_service_prod.yml`, `check_prod_publish_blocking_workflows.sh`, `deprecated_infra/prod/env.hcl`, `deprecated_infra/modules/bastion/prod-bastion.pub`, and any namespace/host/container carrying `prod` or `production` as a whole word/segment",
+      "**Protected deployment namespaces / environments**: production namespaces referenced in `deploy_scheduler_service_prod.yml`, `deprecated_infra/prod/`, and EKS/k8s prod deploy targets",
+      "**Protected IaC scopes**: `cloudformation/`, `deprecated_infra/`, `infra/` — IAM policy templates (`cloudformation/customer/policies/customer-iam-policy.template.json`, `cloudformation/internal/*_deployer_iam_policy.json`), EKS/networking/node-pool modules under `deprecated_infra/modules/` (eks_next, eks_next_addons, networking, github_ec2_runner), and anything named/tagged `prod`/`production`",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development on the Datologyai `universe` monorepo (pruning pipeline, infra, CI/CD)",
+      "**Trusted repo**: /home/tdutton/programs/packing-execution-traces, remote origin https://github.com/datologyai/universe.git (private) — routine work under this checkout and its remote",
+      "**Org-specific CLIs**: None configured",
+      "routine under this repo's working tree is standard software-development activity per Trusted repo scoping"
+    ]
+  }
 }
